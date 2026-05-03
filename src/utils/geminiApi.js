@@ -1,8 +1,20 @@
 /**
- * Gemini AI Integration for VoteSmart AI
- * Uses backend Cloud Functions for security (API key hidden)
+ * @fileoverview Gemini AI Integration for VoteSmart AI
+ *
+ * Provides a 3-tier AI response system:
+ * 1. Backend Cloud Functions (secure, key never exposed)
+ * 2. Offline Knowledge Base (25+ curated Q&A pairs)
+ * 3. Cache (instant responses for repeated queries)
+ *
+ * @module geminiApi
+ * @author Abhishek Kumar
+ * @see {@link https://ai.google.dev} Google Gemini AI Documentation
  */
 
+/**
+ * Initializes the AI module (no-op in Cloud Functions mode)
+ * @returns {boolean} Always true — Cloud Functions handles key management
+ */
 export function initializeAI(apiKey) {
   // We no longer need local API keys. We use the backend.
   // We return true to simulate it being connected.
@@ -10,6 +22,19 @@ export function initializeAI(apiKey) {
   return true;
 }
 
+/**
+ * Sends a message to the AI backend (Gemini via Cloud Functions)
+ * Falls back to the offline knowledge base on network errors.
+ *
+ * @param {string} userMessage - The user's question or message
+ * @param {Array<{role: string, text: string}>} [chatHistory=[]] - Prior conversation turns
+ * @param {'en'|'hi'} [language='en'] - Response language (English or Hindi)
+ * @returns {Promise<{text: string, source: 'ai'|'offline'}>} AI or offline response
+ *
+ * @example
+ * const reply = await sendMessage('How do I register to vote?', [], 'en');
+ * console.log(reply.text); // "Visit nvsp.in and fill Form 6..."
+ */
 export async function sendMessage(userMessage, chatHistory = [], language = 'en') {
   try {
     const response = await fetch('/api/chat', {
