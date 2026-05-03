@@ -1,0 +1,29 @@
+{
+  "name": "VoteSmart AI",
+  "short_name": "VoteSmart",
+  "description": "AI-Powered Election Education Platform for India's 968M voters",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fdf8f3",
+  "theme_color": "#FF9933",
+  "orientation": "portrait-primary",
+  "categories": ["education", "government", "utilities"],
+  "lang": "en",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🗳️</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "label": "VoteSmart AI Home",
+      "platform": "wide"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}

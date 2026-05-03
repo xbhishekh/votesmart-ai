@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { LanguageProvider, useLanguage, lt } from './LanguageContext';
+import { LanguageProvider, useLanguage, lt } from '../LanguageContext';
 
 describe('LanguageContext', () => {
   const wrapper = ({ children }) => <LanguageProvider>{children}</LanguageProvider>;
