@@ -1,95 +1,297 @@
-import { useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { t } from '../data/translations';
-import './Navbar.css';
-
-// Inline SVG icons — eliminates react-icons dependency
-const IconHome = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-    <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" /><polyline points="9 22 9 12 15 12 15 22" />
-  </svg>
-);
-const IconClipboard = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" />
-  </svg>
-);
-const IconShield = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
-const IconChat = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-  </svg>
-);
-const IconSettings = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-    <circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
-  </svg>
-);
-const IconMenu = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-    <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
-  </svg>
-);
-const IconX = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6">
-    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-  </svg>
-);
 
 export default function Navbar({ onSettingsClick }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const { language } = useLanguage();
-  const L = (key) => t(language, key);
+  const location = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const isHi = language === 'hi';
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   const navItems = [
-    { path: '/', label: L('navHome'), icon: <IconHome /> },
-    { path: '/simulator', label: L('navSimulator'), icon: <IconClipboard /> },
-    { path: '/guide', label: L('navGuide'), icon: <IconHome /> },
-    { path: '/myths', label: L('navMyths'), icon: <IconShield /> },
-    { path: '/chat', label: L('navChat'), icon: <IconChat /> },
+    { path: '/', label: isHi ? 'होम' : 'Home', icon: '🏠' },
+    { path: '/simulator', label: isHi ? 'सिमुलेटर' : 'Simulator', icon: '🎮' },
+    { path: '/timeline', label: isHi ? 'समयरेखा' : 'Timeline', icon: '📅', isNew: true },
+    { path: '/myths', label: isHi ? 'मिथक बस्टर' : 'Myth Buster', icon: '🧠' },
+    { path: '/guide', label: isHi ? 'गाइड' : 'Guide', icon: '📋' },
+    { path: '/chat', label: isHi ? 'AI चैट' : 'AI Chat', icon: '🤖' },
   ];
 
   return (
-    <nav className="navbar" id="main-navbar">
-      <div className="navbar-inner container">
-        <NavLink to="/" className="navbar-brand" onClick={() => setMobileOpen(false)}>
-          <span className="brand-icon">🗳️</span>
-          <span className="brand-text">
-            <strong>VoteSmart</strong> <span className="brand-ai">AI</span>
-          </span>
-        </NavLink>
+    <>
+      <nav
+        id="main-navbar"
+        role="navigation"
+        aria-label="Main navigation"
+        style={{
+          position: 'fixed',
+          top: 0, left: 0, right: 0,
+          zIndex: 1000,
+          height: '72px',
+          display: 'flex',
+          alignItems: 'center',
+          padding: '0 24px',
+          background: scrolled
+            ? 'rgba(253,249,243,0.92)'
+            : 'rgba(253,249,243,0.7)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          borderBottom: scrolled
+            ? '1px solid rgba(255,153,51,0.2)'
+            : '1px solid transparent',
+          boxShadow: scrolled ? '0 4px 24px rgba(0,0,0,0.06)' : 'none',
+          transition: 'all 0.3s ease',
+        }}
+      >
+        {/* Logo */}
+        <Link
+          to="/"
+          id="nav-logo"
+          style={{
+            display: 'flex', alignItems: 'center', gap: '10px',
+            textDecoration: 'none', flexShrink: 0,
+          }}
+        >
+          <div style={{
+            width: '38px', height: '38px', borderRadius: '12px',
+            background: 'linear-gradient(135deg, #FF9933, #FFB347)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: '18px', boxShadow: '0 4px 12px rgba(255,153,51,0.3)',
+          }}>
+            🗳️
+          </div>
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-heading)', fontWeight: 800,
+              fontSize: '1.15rem', color: 'var(--text-primary)', lineHeight: 1.1,
+            }}>
+              Vote<span style={{ color: '#FF9933' }}>Smart</span> AI
+            </div>
+            <div style={{ fontSize: '0.62rem', fontWeight: 700, color: '#138808', textTransform: 'uppercase', letterSpacing: '0.1em' }}>
+              {isHi ? 'सीखें • खेलें • सत्यापित करें' : 'LEARN • PLAY • VERIFY'}
+            </div>
+          </div>
+        </Link>
 
-        <div className={`navbar-links ${mobileOpen ? 'open' : ''}`}>
-          {navItems.map(item => (
-            <NavLink
-              key={item.path}
-              to={item.path}
-              className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-              onClick={() => setMobileOpen(false)}
-              end={item.path === '/'}
+        {/* Desktop nav links */}
+        <div
+          style={{
+            flex: 1, display: 'flex', justifyContent: 'center', gap: '4px',
+          }}
+          className="desktop-nav"
+        >
+          {navItems.map(item => {
+            const active = location.pathname === item.path;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                id={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: '5px',
+                  padding: '7px 13px', borderRadius: '100px',
+                  fontSize: '0.85rem', fontWeight: active ? 700 : 500,
+                  color: active ? '#FF9933' : 'var(--text-secondary)',
+                  background: active ? 'rgba(255,153,51,0.1)' : 'transparent',
+                  border: active ? '1.5px solid rgba(255,153,51,0.3)' : '1.5px solid transparent',
+                  textDecoration: 'none',
+                  transition: 'all 0.2s',
+                  position: 'relative',
+                  whiteSpace: 'nowrap',
+                }}
+                onMouseEnter={e => {
+                  if (!active) {
+                    e.currentTarget.style.background = 'rgba(255,153,51,0.06)';
+                    e.currentTarget.style.color = '#FF9933';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!active) {
+                    e.currentTarget.style.background = 'transparent';
+                    e.currentTarget.style.color = 'var(--text-secondary)';
+                  }
+                }}
+              >
+                <span>{item.icon}</span>
+                <span>{item.label}</span>
+                {item.isNew && (
+                  <span style={{
+                    fontSize: '0.58rem', fontWeight: 800, color: 'white',
+                    background: '#138808', padding: '1px 5px', borderRadius: '100px',
+                    textTransform: 'uppercase', letterSpacing: '0.05em',
+                  }}>
+                    NEW
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* Right actions */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+          {/* Settings */}
+          <button
+            onClick={onSettingsClick}
+            id="settings-btn"
+            aria-label="Settings"
+            style={{
+              width: '38px', height: '38px', borderRadius: '10px',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'transparent', border: '1.5px solid rgba(255,153,51,0.25)',
+              color: 'var(--text-secondary)', fontSize: '16px',
+              cursor: 'pointer', transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.background = 'rgba(255,153,51,0.08)';
+              e.currentTarget.style.borderColor = 'rgba(255,153,51,0.5)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.borderColor = 'rgba(255,153,51,0.25)';
+            }}
+          >
+            ⚙️
+          </button>
+
+          {/* ECI Link */}
+          <a
+            href="https://www.eci.gov.in"
+            target="_blank"
+            rel="noopener noreferrer"
+            id="eci-link"
+            style={{
+              display: 'flex', alignItems: 'center', gap: '6px',
+              padding: '7px 14px', borderRadius: '100px',
+              background: 'linear-gradient(135deg, #FF9933, #FFB347)',
+              color: 'white', fontSize: '0.8rem', fontWeight: 700,
+              textDecoration: 'none', boxShadow: '0 3px 12px rgba(255,153,51,0.3)',
+              transition: 'all 0.2s',
+            }}
+            onMouseEnter={e => {
+              e.currentTarget.style.transform = 'translateY(-1px)';
+              e.currentTarget.style.boxShadow = '0 6px 20px rgba(255,153,51,0.4)';
+            }}
+            onMouseLeave={e => {
+              e.currentTarget.style.transform = 'translateY(0)';
+              e.currentTarget.style.boxShadow = '0 3px 12px rgba(255,153,51,0.3)';
+            }}
+          >
+            🏛️ {isHi ? 'ECI' : 'ECI'}
+          </a>
+
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setMobileOpen(!mobileOpen)}
+            id="mobile-menu-btn"
+            aria-label="Toggle menu"
+            className="mobile-menu-btn"
+            style={{
+              width: '38px', height: '38px', borderRadius: '10px',
+              display: 'none', alignItems: 'center', justifyContent: 'center',
+              background: mobileOpen ? 'rgba(255,153,51,0.1)' : 'transparent',
+              border: '1.5px solid rgba(255,153,51,0.25)',
+              cursor: 'pointer', fontSize: '18px',
+            }}
+          >
+            {mobileOpen ? '✕' : '☰'}
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <div
+          style={{
+            position: 'fixed', top: '72px', left: 0, right: 0,
+            background: 'rgba(253,249,243,0.97)',
+            backdropFilter: 'blur(20px)',
+            borderBottom: '1px solid rgba(255,153,51,0.2)',
+            zIndex: 999,
+            padding: '16px 20px 24px',
+            animation: 'fadeInDown 0.2s ease-out forwards',
+          }}
+          id="mobile-menu"
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            {navItems.map(item => {
+              const active = location.pathname === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: '12px',
+                    padding: '12px 16px', borderRadius: '12px',
+                    color: active ? '#FF9933' : 'var(--text-primary)',
+                    background: active ? 'rgba(255,153,51,0.1)' : 'transparent',
+                    textDecoration: 'none', fontWeight: active ? 700 : 500,
+                    fontSize: '1rem',
+                  }}
+                >
+                  <span style={{ fontSize: '1.3rem' }}>{item.icon}</span>
+                  <span>{item.label}</span>
+                  {item.isNew && (
+                    <span style={{
+                      marginLeft: 'auto', fontSize: '0.65rem', fontWeight: 800,
+                      color: 'white', background: '#138808',
+                      padding: '2px 8px', borderRadius: '100px',
+                    }}>
+                      NEW
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
+          <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid rgba(255,153,51,0.15)', display: 'flex', gap: '12px' }}>
+            <button
+              onClick={() => { onSettingsClick(); setMobileOpen(false); }}
+              style={{
+                flex: 1, padding: '10px', borderRadius: '10px',
+                border: '1.5px solid rgba(255,153,51,0.3)', background: 'transparent',
+                color: 'var(--text-secondary)', fontWeight: 600, cursor: 'pointer', fontSize: '0.9rem',
+              }}
             >
-              <span className="nav-icon">{item.icon}</span>
-              <span className="nav-label">{item.label}</span>
-            </NavLink>
-          ))}
+              ⚙️ {isHi ? 'सेटिंग्स' : 'Settings'}
+            </button>
+            <a
+              href="https://www.eci.gov.in"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                flex: 1, padding: '10px', borderRadius: '10px', textAlign: 'center',
+                background: 'linear-gradient(135deg, #FF9933, #FFB347)',
+                color: 'white', fontWeight: 700, textDecoration: 'none', fontSize: '0.9rem',
+              }}
+            >
+              🏛️ ECI Official
+            </a>
+          </div>
         </div>
+      )}
 
-        <div className="navbar-actions">
-          <button className="settings-btn" onClick={onSettingsClick} title="Settings" id="settings-btn" aria-label="Open settings">
-            <IconSettings />
-          </button>
-          <button className="mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)} id="mobile-menu-btn" aria-label={mobileOpen ? 'Close menu' : 'Open menu'}>
-            {mobileOpen ? <IconX /> : <IconMenu />}
-          </button>
-        </div>
-      </div>
+      {/* Spacer */}
+      <div style={{ height: '72px' }} aria-hidden="true" />
 
-      {mobileOpen && <div className="mobile-backdrop" onClick={() => setMobileOpen(false)} />}
-    </nav>
+      <style>{`
+        @media (max-width: 900px) {
+          .desktop-nav { display: none !important; }
+          .mobile-menu-btn { display: flex !important; }
+          #eci-link { display: none !important; }
+        }
+      `}</style>
+    </>
   );
 }

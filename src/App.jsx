@@ -13,6 +13,7 @@ const VotingGuide = lazy(() => import('./components/VotingGuide'));
 const Dashboard = lazy(() => import('./components/Dashboard'));
 const MythBuster = lazy(() => import('./components/MythBuster'));
 const ChatAssistant = lazy(() => import('./components/ChatAssistant'));
+const ElectionTimeline = lazy(() => import('./components/ElectionTimeline'));
 
 
 export default function App() {
@@ -79,6 +80,7 @@ export default function App() {
             <Route path="/guide" element={<VotingGuide />} />
             <Route path="/myths" element={<MythBuster />} />
             <Route path="/chat" element={<ChatAssistant />} />
+            <Route path="/timeline" element={<ElectionTimeline />} />
           </Routes>
         </Suspense>
       </main>

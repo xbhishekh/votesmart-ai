@@ -1,7 +1,9 @@
 {
   "name": "votesmart-ai",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
+  "description": "AI-Powered Election Education Platform — Empowering India's citizens",
+  "author": "xbhishekh <https://github.com/xbhishekh>",
   "type": "module",
   "scripts": {
     "dev": "vite",

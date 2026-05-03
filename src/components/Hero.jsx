@@ -1,132 +1,356 @@
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { t } from '../data/translations';
+import { useEffect, useRef, useState } from 'react';
 
-const IconPlay = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-    <circle cx="12" cy="12" r="10" /><polygon points="10 8 16 12 10 16 10 8" />
-  </svg>
-);
-const IconClipboard = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2" /><rect x="9" y="3" width="6" height="4" rx="1" />
-  </svg>
-);
-const IconShield = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-  </svg>
-);
-const IconChat = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" className="w-7 h-7">
-    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
-  </svg>
-);
+// Animated counter hook
+function useCountUp(target, duration = 2000, start = false) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (!start) return;
+    let startTime = null;
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration, start]);
+  return count;
+}
+
+function ParticlesBackground() {
+  return (
+    <div className="particles-bg" aria-hidden="true">
+      {[...Array(12)].map((_, i) => (
+        <div
+          key={i}
+          className="particle"
+          style={{
+            width: `${20 + (i * 13) % 40}px`,
+            height: `${20 + (i * 13) % 40}px`,
+            left: `${(i * 8.3)}%`,
+            top: `${(i * 7.7) % 90}%`,
+            background: i % 3 === 0 ? '#FF9933' : i % 3 === 1 ? '#138808' : '#000080',
+            animationDuration: `${4 + (i % 4)}s`,
+            animationDelay: `${(i * 0.4) % 3}s`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function AshokChakra() {
+  return (
+    <svg viewBox="0 0 100 100" className="w-full h-full chakra-spin" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="45" stroke="#000080" strokeWidth="4" fill="none"/>
+      <circle cx="50" cy="50" r="6" fill="#000080"/>
+      {[...Array(24)].map((_, i) => {
+        const angle = (i * 15) * Math.PI / 180;
+        const x1 = 50 + 7 * Math.cos(angle);
+        const y1 = 50 + 7 * Math.sin(angle);
+        const x2 = 50 + 43 * Math.cos(angle);
+        const y2 = 50 + 43 * Math.sin(angle);
+        return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#000080" strokeWidth="1.5"/>;
+      })}
+    </svg>
+  );
+}
 
 export default function Hero() {
   const { language } = useLanguage();
   const L = (key) => t(language, key);
+  const [statsVisible, setStatsVisible] = useState(false);
+  const statsRef = useRef(null);
+
+  const voters = useCountUp(968, 1800, statsVisible);
+  const booths = useCountUp(1050, 2000, statsVisible);
+  const seats = useCountUp(543, 1500, statsVisible);
+  const parties = useCountUp(4000, 2200, statsVisible);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) setStatsVisible(true); },
+      { threshold: 0.3 }
+    );
+    if (statsRef.current) observer.observe(statsRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   const features = [
-    { icon: <IconPlay />, title: L('feat1Title'), desc: L('feat1Desc'), path: '/simulator', color: '#FF9933' },
-    { icon: <IconClipboard />, title: L('feat2Title'), desc: L('feat2Desc'), path: '/guide', color: '#138808' },
-    { icon: <IconShield />, title: L('feat3Title'), desc: L('feat3Desc'), path: '/myths', color: '#FF9933' },
-    { icon: <IconChat />, title: L('feat4Title'), desc: L('feat4Desc'), path: '/chat', color: '#138808' },
+    {
+      icon: '🎮',
+      title: language === 'hi' ? 'इलेक्शन सिमुलेटर' : 'Election Simulator',
+      desc: language === 'hi' ? 'इंटरेक्टिव मतदान यात्रा का अनुभव करें' : 'Experience your voting journey interactively',
+      path: '/simulator',
+      gradient: 'linear-gradient(135deg, #FF9933, #FFB347)',
+      glowColor: 'rgba(255,153,51,0.3)',
+      delay: '0.1s',
+    },
+    {
+      icon: '🧠',
+      title: language === 'hi' ? 'मिथक बस्टर' : 'Myth Buster',
+      desc: language === 'hi' ? 'AI से चुनावी मिथकों को तोड़ें' : 'Bust election myths with AI verification',
+      path: '/myths',
+      gradient: 'linear-gradient(135deg, #138808, #2ECC40)',
+      glowColor: 'rgba(19,136,8,0.3)',
+      delay: '0.2s',
+    },
+    {
+      icon: '🤖',
+      title: language === 'hi' ? 'AI सहायक' : 'AI Assistant',
+      desc: language === 'hi' ? 'चुनाव के बारे में कुछ भी पूछें' : 'Ask anything about elections & voting',
+      path: '/chat',
+      gradient: 'linear-gradient(135deg, #000080, #4444AA)',
+      glowColor: 'rgba(0,0,128,0.25)',
+      delay: '0.3s',
+    },
+    {
+      icon: '📋',
+      title: language === 'hi' ? 'मतदाता गाइड' : 'Voter Guide',
+      desc: language === 'hi' ? 'आपके लिए व्यक्तिगत मतदान गाइड' : 'Personalized guide to register & vote',
+      path: '/guide',
+      gradient: 'linear-gradient(135deg, #FF6B6B, #FF8E53)',
+      glowColor: 'rgba(255,107,107,0.25)',
+      delay: '0.4s',
+    },
+    {
+      icon: '📊',
+      title: language === 'hi' ? 'चुनाव डैशबोर्ड' : 'Election Dashboard',
+      desc: language === 'hi' ? 'लाइव चुनाव डेटा और आँकड़े' : 'Live election data and statistics',
+      path: '/dashboard',
+      gradient: 'linear-gradient(135deg, #7B2FF7, #F107A3)',
+      glowColor: 'rgba(123,47,247,0.25)',
+      delay: '0.5s',
+    },
+    {
+      icon: '📅',
+      title: language === 'hi' ? 'चुनाव कैलेंडर' : 'Election Timeline',
+      desc: language === 'hi' ? 'पूरी चुनाव प्रक्रिया की समयरेखा' : 'Complete election process timeline',
+      path: '/timeline',
+      gradient: 'linear-gradient(135deg, #11998e, #38ef7d)',
+      glowColor: 'rgba(17,153,142,0.25)',
+      delay: '0.6s',
+    },
   ];
 
   const stats = [
-    { value: '96.8 Cr', label: L('stat1') },
-    { value: '10.5 L+', label: L('stat2') },
-    { value: '543', label: L('stat3') },
-    { value: '4000+', label: L('stat4') },
+    { value: voters, suffix: ' Cr+', label: language === 'hi' ? 'पंजीकृत मतदाता' : 'Registered Voters', icon: '🗳️' },
+    { value: booths, suffix: ' L+', label: language === 'hi' ? 'मतदान केंद्र' : 'Polling Stations', icon: '🏛️' },
+    { value: seats, suffix: '', label: language === 'hi' ? 'लोकसभा सीटें' : 'Lok Sabha Seats', icon: '🏛' },
+    { value: parties, suffix: '+', label: language === 'hi' ? 'राजनीतिक दल' : 'Political Parties', icon: '🎖️' },
   ];
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-[#f7f3ee]">
-      {/* BEGIN: MainContainer */}
-      <main className="max-w-4xl w-full bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden p-8 md:p-12 mb-8">
-        {/* BEGIN: HeaderSection */}
-        <header className="flex flex-col items-center text-center mb-8">
-          <div className="mb-2">
-            <img
-              alt="VoteSmart AI Logo"
-              className="h-16 w-auto object-contain block"
-              width="180"
-              height="64"
-              fetchpriority="high"
-              loading="eager"
-              decoding="async"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBGTPE9Ox51YDsplCtKiTmJr_3tiu9V2st_Zl6p5Mxp-GVea7r5PJyn3LjYoQ3Z7gkiJ1ZHMDeDytc9wGUk4ynJlExaMyhDaRwMZFqXEPCBwzePwyAs8CDgzImxO48GX--Hoz9BW3ZOW36wECEglFYprxIKfa0ushd8ro4FSlqC6nlk1D3mCUbKfUSExGEdou6HWlYFMoXmpo1KdNbjL-OKrQl2-W07F2e3B0H3sClnRipK53nH5ikU9FgWn8zORmytFlc89Jv1NHDM"
-            />
-          </div>
-          <p className="uppercase tracking-widest text-xs font-bold text-gray-600">{L('heroBadge') || 'Learn • Play • Verify'}</p>
-          <h1 className="mt-8 text-3xl md:text-4xl font-bold text-[#333333]">
-            {L('heroTitle1')} <span className="text-[#8c5d38]">{L('heroTitle2')}</span>
-          </h1>
-          <p className="mt-2 text-gray-600 text-lg">{L('heroSubtitle')}</p>
-        </header>
-        {/* END: HeaderSection */}
+    <div style={{ background: 'var(--bg-primary)', minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
+      <ParticlesBackground />
 
-        {/* BEGIN: HeroSection */}
-        <section className="flex justify-center mb-12">
-          <div className="relative w-full max-w-2xl">
-            <img
-              alt="Electoral Process Illustration"
-              className="w-full h-auto rounded-xl block"
-              width="672"
-              height="400"
-              loading="lazy"
-              decoding="async"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCOPm2bEGM-AxvbdDHEi7PEcaGVKDpSn0RICm1vD1_ghqCTCtptREiEQNKEofpdxoqWj-l9OjOCCZYqsByoqIZatHr6L1Cm4wnaOXR1JprEQtWvhXAAafjsfWDdWdAy_wXBQpHb8d_mhmOE6t_6DuzUgsfqZXktihlXlNbpfIkOa-QAQoaz10WCZZd17H_fMmcf1QQ9TcmDOgToxL4cCwT9BVBmWWEeOZ7szqWgZ0SGxJfL3hK1TIlWVGMfbDbypDDki5Ou2--RIsL3"
-            />
-          </div>
-        </section>
-        {/* END: HeroSection */}
+      {/* Hero Section */}
+      <section style={{ paddingTop: '80px', paddingBottom: '60px', position: 'relative', zIndex: 1 }}>
+        <div className="container">
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '24px' }}>
 
-        {/* BEGIN: FeaturesSection */}
-        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12" id="features-section">
-          {features.slice(0, 3).map((f, i) => (
-            <Link key={f.path} to={f.path} className="flex flex-col items-center text-center no-underline group">
-              <div className="w-16 h-16 rounded-full bg-[#f0e4d7] flex items-center justify-center mb-4 border border-[#d4a373]/20">
-                <span className="text-2xl text-[#8c5d38]">{f.icon}</span>
+            {/* Badge */}
+            <div className="animate-fade-in-up stagger-1" style={{ animationFillMode: 'forwards' }}>
+              <div style={{
+                display: 'inline-flex', alignItems: 'center', gap: '10px',
+                padding: '8px 20px', borderRadius: '100px',
+                background: 'rgba(255,153,51,0.1)',
+                border: '1.5px solid rgba(255,153,51,0.25)',
+              }}>
+                <div className="pulse-dot" />
+                <span style={{ fontSize: '0.8rem', fontWeight: 700, color: '#cc7700', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                  {language === 'hi' ? 'AI-संचालित नागरिक शिक्षा मंच' : 'AI-Powered Civic Education Platform'}
+                </span>
               </div>
-              <h3 className="font-bold text-lg text-[#333333]">{f.title}</h3>
-              <p className="text-sm text-gray-500">{f.desc}</p>
-            </Link>
-          ))}
-        </section>
-        {/* END: FeaturesSection */}
+            </div>
 
-        {/* BEGIN: CTASection */}
-        <section className="flex justify-center">
-          <Link
-            to="/simulator"
-            className="bg-[#8c5d38] hover:bg-[#7a4f2f] text-white font-semibold py-4 px-12 rounded-xl transition duration-300 flex items-center gap-2 text-lg shadow-md no-underline"
-            id="start-simulator-btn"
-          >
-            {L('heroStartSim')}
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14 5l7 7m0 0l-7 7m7-7H3" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
-            </svg>
-          </Link>
-        </section>
-        {/* END: CTASection */}
-      </main>
-      {/* END: MainContainer */}
+            {/* Main heading */}
+            <div className="animate-fade-in-up stagger-2" style={{ animationFillMode: 'forwards' }}>
+              <h1 style={{ fontSize: 'clamp(2.5rem, 7vw, 5rem)', fontWeight: 900, lineHeight: 1.05, maxWidth: '800px' }}>
+                <span className="gradient-text">VoteSmart</span>
+                <span style={{ color: 'var(--text-primary)' }}> AI</span>
+                <br />
+                <span style={{ fontSize: 'clamp(1.4rem, 3.5vw, 2.2rem)', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  {language === 'hi' ? 'सीखें • खेलें • सत्यापित करें' : 'Learn • Play • Verify'}
+                </span>
+              </h1>
+            </div>
 
-      {/* BEGIN: Footer */}
-      <footer className="w-full flex flex-col items-center space-y-6 pb-8">
-        <nav className="flex space-x-6 text-sm text-gray-600 font-medium">
-          <a href="https://www.eci.gov.in/contact-us" target="_blank" rel="noopener noreferrer" className="hover:text-[#8c5d38] transition-colors">Contact Us</a>
-        </nav>
-        <div className="w-full max-w-2xl text-center px-4 text-xs text-gray-500 space-y-3">
-          <p>Our AI assistant is designed to provide information strictly based on official Indian election guidelines and principles derived from the Constitution of India.</p>
-          <p>We do not generate misleading or fabricated information. All responses are aligned with publicly available government sources, election rules, and verified civic knowledge.</p>
-          <p>However, this platform is an educational tool and should not be considered a substitute for official government communication. For final verification, users are encouraged to refer to the Election Commission of India website.</p>
-          <p>Our goal is to promote awareness, transparency, and informed voting among citizens.</p>
+            {/* Subtitle */}
+            <div className="animate-fade-in-up stagger-3" style={{ animationFillMode: 'forwards' }}>
+              <p style={{ fontSize: 'clamp(1rem, 2vw, 1.25rem)', color: 'var(--text-secondary)', maxWidth: '600px', lineHeight: 1.6 }}>
+                {language === 'hi'
+                  ? 'भारत का सबसे उन्नत AI-संचालित मतदाता शिक्षा मंच। चुनाव प्रक्रिया को इंटरेक्टिव, मजेदार और आसान बनाएं।'
+                  : "India's most advanced AI-powered voter education platform. Make election literacy interactive, fun and accessible for every citizen."}
+              </p>
+            </div>
+
+            {/* CTA Buttons */}
+            <div className="animate-fade-in-up stagger-4" style={{ animationFillMode: 'forwards', display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center' }}>
+              <Link to="/simulator" className="btn-primary" id="start-simulator-btn" style={{ fontSize: '1.05rem', padding: '16px 36px' }}>
+                🎮 {language === 'hi' ? 'सिमुलेटर शुरू करें' : 'Start Simulator'}
+              </Link>
+              <Link to="/chat" className="btn-secondary" id="ask-ai-btn" style={{ fontSize: '1.05rem', padding: '14px 32px' }}>
+                🤖 {language === 'hi' ? 'AI से पूछें' : 'Ask AI'}
+              </Link>
+            </div>
+
+            {/* Trust bar */}
+            <div className="animate-fade-in-up stagger-5" style={{ animationFillMode: 'forwards', display: 'flex', gap: '24px', flexWrap: 'wrap', justifyContent: 'center', marginTop: '8px' }}>
+              {['🔒 100% Free', '🌐 Hindi + English', '⚡ Powered by Gemini AI'].map((item, i) => (
+                <span key={i} style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: 500 }}>{item}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section style={{ padding: '40px 0 60px', position: 'relative', zIndex: 1 }} id="features-section">
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 style={{ fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', fontWeight: 800 }}>
+              {language === 'hi' ? '✨ सब कुछ एक जगह' : '✨ Everything You Need'}
+            </h2>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '8px' }}>
+              {language === 'hi' ? 'चुनाव शिक्षा के लिए 6 शक्तिशाली उपकरण' : '6 powerful tools for complete election education'}
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px' }}>
+            {features.map((feat, i) => (
+              <Link
+                key={feat.path}
+                to={feat.path}
+                id={`feature-card-${i}`}
+                className="premium-card"
+                style={{
+                  display: 'block',
+                  padding: '28px',
+                  textDecoration: 'none',
+                  animation: `fadeInUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) ${feat.delay} forwards`,
+                  opacity: 0,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '18px' }}>
+                  <div style={{
+                    width: '60px', height: '60px', borderRadius: '16px',
+                    background: feat.gradient,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '28px', flexShrink: 0,
+                    boxShadow: `0 8px 24px ${feat.glowColor}`,
+                  }}>
+                    {feat.icon}
+                  </div>
+                  <div>
+                    <h3 style={{ fontWeight: 700, fontSize: '1.1rem', marginBottom: '6px', color: 'var(--text-primary)' }}>
+                      {feat.title}
+                    </h3>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                      {feat.desc}
+                    </p>
+                    <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '4px', color: '#FF9933', fontWeight: 600, fontSize: '0.85rem' }}>
+                      {language === 'hi' ? 'शुरू करें' : 'Explore'} <span>→</span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
+      <section
+        ref={statsRef}
+        style={{
+          margin: '0 0 60px',
+          padding: '60px 0',
+          background: 'linear-gradient(135deg, rgba(255,153,51,0.05) 0%, rgba(19,136,8,0.05) 100%)',
+          borderTop: '1px solid rgba(255,153,51,0.12)',
+          borderBottom: '1px solid rgba(255,153,51,0.12)',
+          position: 'relative', zIndex: 1,
+        }}
+        id="stats-section"
+      >
+        <div className="container">
+          <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+            <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2.2rem)', fontWeight: 800 }}>
+              🇮🇳 {language === 'hi' ? "भारत के चुनाव आँकड़े" : "India's Election by Numbers"}
+            </h2>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '24px' }}>
+            {stats.map((stat, i) => (
+              <div key={i} className="premium-card" style={{ padding: '32px 20px', textAlign: 'center' }}>
+                <div style={{ fontSize: '2.5rem', marginBottom: '8px' }}>{stat.icon}</div>
+                <div className="stat-number">{stat.value.toLocaleString()}{stat.suffix}</div>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.88rem', fontWeight: 500, marginTop: '6px' }}>
+                  {stat.label}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Ashoka Chakra showcase */}
+      <section style={{ padding: '20px 0 80px', position: 'relative', zIndex: 1 }}>
+        <div className="container">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '60px', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <div style={{ width: '180px', height: '180px', opacity: 0.15 }}>
+              <AshokChakra />
+            </div>
+            <div style={{ maxWidth: '520px' }}>
+              <div className="india-stripe" style={{ marginBottom: '20px' }} />
+              <h2 style={{ fontSize: 'clamp(1.5rem, 4vw, 2rem)', fontWeight: 800, marginBottom: '14px' }}>
+                {language === 'hi' ? '🗳️ हर वोट मायने रखता है' : '🗳️ Every Vote Matters'}
+              </h2>
+              <p style={{ color: 'var(--text-secondary)', lineHeight: 1.7, marginBottom: '24px', fontSize: '1rem' }}>
+                {language === 'hi'
+                  ? 'VoteSmart AI आपको चुनाव प्रक्रिया की पूरी समझ देता है — पंजीकरण से लेकर मतगणना तक। AI-संचालित सहायक, इंटरेक्टिव सिमुलेशन और तथ्य-जाँच के साथ।'
+                  : 'VoteSmart AI gives you complete understanding of the election process — from registration to counting. With AI-powered assistant, interactive simulations and real-time fact-checking.'}
+              </p>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                <Link to="/timeline" className="btn-primary" id="view-timeline-btn">
+                  📅 {language === 'hi' ? 'चुनाव समयरेखा' : 'Election Timeline'}
+                </Link>
+                <Link to="/myths" className="btn-secondary" id="bust-myths-btn">
+                  🧠 {language === 'hi' ? 'मिथक बस्टर' : 'Myth Buster'}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{
+        borderTop: '1px solid rgba(255,153,51,0.12)',
+        padding: '32px 0',
+        textAlign: 'center',
+        color: 'var(--text-muted)',
+        fontSize: '0.82rem',
+        position: 'relative', zIndex: 1,
+      }}>
+        <div className="container">
+          <div style={{ marginBottom: '12px', display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'center' }}>
+            <span style={{ fontWeight: 700, color: '#FF9933' }}>VoteSmart AI</span>
+            <span>•</span>
+            <span>Powered by Gemini AI</span>
+            <span>•</span>
+            <a href="https://www.eci.gov.in" target="_blank" rel="noopener noreferrer" style={{ color: '#138808', fontWeight: 500 }}>
+              ECI Official
+            </a>
+          </div>
+          <p style={{ maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
+            This platform is for educational purposes. For official information, refer to the Election Commission of India.
+          </p>
         </div>
       </footer>
-      {/* END: Footer */}
     </div>
   );
 }

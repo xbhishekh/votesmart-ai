@@ -6,6 +6,7 @@
 [![Cloud Run](https://img.shields.io/badge/Deployed%20on-Cloud%20Run-4285F4?style=flat&logo=google-cloud&logoColor=white)](https://cloud.google.com/run)
 [![React](https://img.shields.io/badge/React-18-61dafb?style=flat&logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-5-646cff?style=flat&logo=vite&logoColor=white)](https://vitejs.dev)
+[![Built by xbhishekh](https://img.shields.io/badge/Built%20by-xbhishekh-FF9933?style=flat&logo=github&logoColor=white)](https://github.com/xbhishekh)
 
 ---
 
@@ -25,6 +26,8 @@ VoteSmart AI is a **context-aware, bilingual AI platform** that provides:
 2. **AI-powered myth verification** with confidence scoring and source attribution
 3. **Interactive voting simulation** with step-by-step scenarios and quizzes
 4. **Real-time AI chat assistant** with conversation history and contextual responses
+5. **Election Timeline** — complete visual walkthrough of the Indian election process
+6. **Election Dashboard** — live stats and real-time civic data
 
 ---
 
@@ -64,7 +67,7 @@ This ensures the platform works even without network connectivity.
 ### 1. Google Gemini AI (Core Intelligence)
 **Purpose:** Powers the AI chat assistant and myth verification engine.
 **Why Gemini:** Gemini provides state-of-the-art reasoning for analyzing election claims, generating personalized voting guidance, and maintaining context-aware conversations in both English and Hindi.
-- Used in: `/api/chat` (conversational AI) and `/api/myth` (claim verification)
+- Used in: `/api/chat` (conversational AI) and `/api/myth` (claim analysis)
 - Attribution: "Powered by Google Gemini" displayed in the AI assistant interface
 
 ### 2. Google Cloud Run (Deployment)
@@ -113,6 +116,10 @@ This ensures the platform works even without network connectivity.
 │  │Voting   │ │Dashboard │ │Chat Assistant│  │
 │  │ Guide   │ │          │ │ (AI Chat)    │  │
 │  └─────────┘ └──────────┘ └──────────────┘  │
+│  ┌─────────┐                                │
+│  │Timeline │  ← NEW: Election Process       │
+│  │         │        Visual Timeline         │
+│  └─────────┘                                │
 └──────────────────┬──────────────────────────┘
                    │ HTTPS
 ┌──────────────────▼──────────────────────────┐
@@ -134,8 +141,8 @@ This ensures the platform works even without network connectivity.
 
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd VoteSmart-AI
+git clone https://github.com/xbhishekh/votesmart-ai.git
+cd votesmart-ai
 
 # Install dependencies
 npm install
@@ -145,9 +152,6 @@ npm run dev
 
 # Run tests
 npm test
-
-# Run tests with coverage
-npm run test:coverage
 
 # Build for production
 npm run build
@@ -161,12 +165,13 @@ npm run build
 src/
 ├── components/          # React UI components
 │   ├── __tests__/       # Component test suites
-│   ├── Hero.jsx         # Landing page
+│   ├── Hero.jsx         # Landing page (ultra premium)
 │   ├── ChatAssistant.jsx # AI chat interface
 │   ├── MythBuster.jsx   # Myth verification
 │   ├── Simulator.jsx    # Voting quiz simulator
 │   ├── VotingGuide.jsx  # Personalized guide
 │   ├── Dashboard.jsx    # User dashboard
+│   ├── ElectionTimeline.jsx # NEW: Full election process timeline
 │   ├── Navbar.jsx       # Navigation
 │   └── ...
 ├── contexts/            # React Context providers
@@ -213,20 +218,6 @@ npm run test:coverage # Coverage report
 - **HTTP security headers** — CSP, X-Frame-Options, X-Content-Type-Options, Referrer-Policy
 - **Input validation** — all user inputs validated before API submission
 
-### Security Notice regarding Development Dependencies
-
-The project uses Vite for development. Some moderate vulnerabilities are reported in development dependencies (esbuild via Vite).
-
-These vulnerabilities:
-- Only affect the local development server
-- Do NOT impact production builds
-- Are not exposed to end users
-
-Production is deployed using optimized static build, ensuring:
-- No dev server exposure
-- Secure API handling via backend
-- No sensitive data leakage
-
 ---
 
 ## 📦 Deployment
@@ -243,6 +234,8 @@ gcloud run deploy votesmart-ai --source . --region asia-south1 --allow-unauthent
 
 ## 📝 License
 
-This project is developed for the Hack2Skill PromptWars competition.
+This project is developed for the Hack2Skill Virtual: PromptWars competition.
 
 Built with ❤️ using Google Gemini AI, React, and Google Cloud Platform.
+
+**GitHub:** [github.com/xbhishekh/votesmart-ai](https://github.com/xbhishekh/votesmart-ai)
