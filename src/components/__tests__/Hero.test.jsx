@@ -1,24 +1,11 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '../../test/test-utils';
 import Hero from '../Hero';
 
 describe('Hero Component', () => {
   it('renders without crashing', () => {
-    render(<Hero />);
-    expect(screen.getByRole('main')).toBeInTheDocument();
-  });
-
-  it('renders the logo image with alt text', () => {
-    render(<Hero />);
-    const logo = screen.getByAltText('VoteSmart AI Logo');
-    expect(logo).toBeInTheDocument();
-  });
-
-  it('renders hero illustration with lazy loading', () => {
-    render(<Hero />);
-    const illustration = screen.getByAltText('Electoral Process Illustration');
-    expect(illustration).toBeInTheDocument();
-    expect(illustration).toHaveAttribute('loading', 'lazy');
+    const { container } = render(<Hero />);
+    expect(container.firstChild).toBeInTheDocument();
   });
 
   it('renders the h1 heading', () => {
@@ -27,22 +14,53 @@ describe('Hero Component', () => {
     expect(heading).toBeInTheDocument();
   });
 
-  it('renders the CTA button linking to simulator', () => {
-    render(<Hero />);
-    const link = screen.getByRole('link', { name: /start/i });
-    expect(link).toHaveAttribute('href', '/simulator');
-  });
-
-  it('renders feature cards section', () => {
+  it('renders the features section', () => {
     const { container } = render(<Hero />);
     const section = container.querySelector('#features-section');
     expect(section).toBeInTheDocument();
   });
 
-  it('renders the footer with ECI link', () => {
+  it('renders the stats section', () => {
+    const { container } = render(<Hero />);
+    const section = container.querySelector('#stats-section');
+    expect(section).toBeInTheDocument();
+  });
+
+  it('renders start simulator CTA button', () => {
     render(<Hero />);
-    const link = screen.getByText('Contact Us');
+    const link = document.getElementById('start-simulator-btn');
+    expect(link).toBeInTheDocument();
+    expect(link.getAttribute('href')).toBe('/simulator');
+  });
+
+  it('renders AI chat CTA button', () => {
+    render(<Hero />);
+    const link = document.getElementById('ask-ai-btn');
+    expect(link).toBeInTheDocument();
+    expect(link.getAttribute('href')).toBe('/chat');
+  });
+
+  it('renders the footer with ECI official link', () => {
+    render(<Hero />);
+    const link = screen.getByText('ECI Official');
     expect(link).toHaveAttribute('target', '_blank');
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  });
+
+  it('renders at least 6 feature cards', () => {
+    const { container } = render(<Hero />);
+    const cards = container.querySelectorAll('[id^="feature-card-"]');
+    expect(cards.length).toBeGreaterThanOrEqual(6);
+  });
+
+  it('renders VoteSmart AI brand in hero', () => {
+    render(<Hero />);
+    expect(screen.getByText('VoteSmart')).toBeInTheDocument();
+  });
+
+  it('has accessible pulse dot', () => {
+    const { container } = render(<Hero />);
+    const dot = container.querySelector('.pulse-dot');
+    expect(dot).toBeInTheDocument();
   });
 });

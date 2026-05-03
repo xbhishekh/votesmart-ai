@@ -27,6 +27,19 @@ Object.defineProperty(window, 'speechSynthesis', {
   },
 });
 
+// Mock SpeechSynthesisUtterance
+global.SpeechSynthesisUtterance = class {
+  constructor(text) {
+    this.text = text;
+    this.lang = '';
+    this.rate = 1;
+    this.pitch = 1;
+    this.volume = 1;
+    this.onend = null;
+    this.onerror = null;
+  }
+};
+
 // Mock SpeechRecognition
 class MockSpeechRecognition {
   constructor() {

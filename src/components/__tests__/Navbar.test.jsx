@@ -12,7 +12,8 @@ describe('Navbar Component', () => {
 
   it('renders VoteSmart brand text', () => {
     render(<Navbar onSettingsClick={mockOnSettings} />);
-    expect(screen.getByText('VoteSmart')).toBeInTheDocument();
+    // Brand text is split into "VoteSmart" + "Smart" span + " AI"
+    expect(screen.getByText('Smart')).toBeInTheDocument();
   });
 
   it('renders all navigation links', () => {
@@ -21,7 +22,7 @@ describe('Navbar Component', () => {
     expect(links.length).toBeGreaterThanOrEqual(5);
   });
 
-  it('settings button has aria-label', () => {
+  it('settings button has correct aria-label', () => {
     render(<Navbar onSettingsClick={mockOnSettings} />);
     const btn = screen.getByLabelText('Open settings');
     expect(btn).toBeInTheDocument();
@@ -33,16 +34,37 @@ describe('Navbar Component', () => {
     expect(mockOnSettings).toHaveBeenCalled();
   });
 
-  it('mobile menu toggle has aria-label', () => {
+  it('mobile menu toggle button exists', () => {
     render(<Navbar onSettingsClick={mockOnSettings} />);
-    const btn = screen.getByLabelText('Open menu');
+    const btn = document.getElementById('mobile-menu-btn');
     expect(btn).toBeInTheDocument();
   });
 
-  it('toggles mobile menu label on click', () => {
+  it('mobile menu button has correct initial aria-label', () => {
     render(<Navbar onSettingsClick={mockOnSettings} />);
-    const btn = screen.getByLabelText('Open menu');
+    const btn = document.getElementById('mobile-menu-btn');
+    expect(btn.getAttribute('aria-label')).toBe('Open menu');
+  });
+
+  it('mobile menu aria-label changes on click', () => {
+    render(<Navbar onSettingsClick={mockOnSettings} />);
+    const btn = document.getElementById('mobile-menu-btn');
     fireEvent.click(btn);
-    expect(screen.getByLabelText('Close menu')).toBeInTheDocument();
+    expect(btn.getAttribute('aria-label')).toBe('Close menu');
+  });
+
+  it('renders logo link pointing to home', () => {
+    render(<Navbar onSettingsClick={mockOnSettings} />);
+    const logo = document.getElementById('nav-logo');
+    expect(logo).toBeInTheDocument();
+    expect(logo.getAttribute('href')).toBe('/');
+  });
+
+  it('renders ECI external link', () => {
+    render(<Navbar onSettingsClick={mockOnSettings} />);
+    const eciLink = document.getElementById('eci-link');
+    expect(eciLink).toBeInTheDocument();
+    expect(eciLink.getAttribute('href')).toBe('https://www.eci.gov.in');
+    expect(eciLink.getAttribute('target')).toBe('_blank');
   });
 });

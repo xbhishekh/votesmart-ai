@@ -145,7 +145,7 @@ export default function Navbar({ onSettingsClick }) {
           <button
             onClick={onSettingsClick}
             id="settings-btn"
-            aria-label="Settings"
+            aria-label="Open settings"
             style={{
               width: '38px', height: '38px', borderRadius: '10px',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -195,7 +195,7 @@ export default function Navbar({ onSettingsClick }) {
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             id="mobile-menu-btn"
-            aria-label="Toggle menu"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             className="mobile-menu-btn"
             style={{
               width: '38px', height: '38px', borderRadius: '10px',

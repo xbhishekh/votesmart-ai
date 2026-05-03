@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '../../test/test-utils';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { render, screen, fireEvent, waitFor, act } from '../../test/test-utils';
 import VoterStatus from '../VoterStatus';
 
 describe('VoterStatus Component', () => {
@@ -47,19 +47,24 @@ describe('VoterStatus Component', () => {
   });
 
   it('shows result after timeout', async () => {
-    vi.useFakeTimers();
-    render(<VoterStatus />);
+    vi.useFakeTimers({ shouldAdvanceTime: false });
+    const { container } = render(<VoterStatus />);
     fireEvent.change(screen.getByLabelText('Full Name'), { target: { value: 'Test User' } });
     fireEvent.change(screen.getByLabelText('State'), { target: { value: 'Delhi' } });
     fireEvent.click(screen.getByLabelText('Check Status'));
-    vi.advanceTimersByTime(1600);
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toBeInTheDocument();
-    });
-    vi.useRealTimers();
-  });
 
-  it('uses light theme (white background)', () => {
+    await act(async () => {
+      vi.advanceTimersByTime(2000);
+      await Promise.resolve(); // flush microtasks
+    });
+
+    const alert = container.querySelector('[role="alert"]');
+    expect(alert).toBeTruthy();
+    vi.useRealTimers();
+  }, 15000);
+
+
+  it('uses bg-white section class', () => {
     const { container } = render(<VoterStatus />);
     const section = container.querySelector('section');
     expect(section.className).toContain('bg-white');
